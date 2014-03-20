@@ -15,7 +15,7 @@ def md5_hash(md5_value):
 
 
 class Bucket(object):
-    SIZE = 24  # 16 + 4 + 4
+    SIZE = 24  # 16(key) + 4(value) + 4(next)
 
     def __init__(self, key, value, next=0):
         assert len(key) == 16
@@ -77,8 +77,8 @@ class HashTable(object):
 
     def iterbuckets(self, include_empty=True):
         for i in range(self.new_bucket_pos):
-            bucket = self.buckets.get(i)
-            yield bucket or EMPTY_BUCKET
+            bucket = self.buckets.get(i, EMPTY_BUCKET)
+            yield bucket
 
 
 def index_file(filename):
