@@ -1,6 +1,7 @@
 import zmq
 import sys
 import json
+import time
 from hashlib import md5
 from libs.leveldb import DB
 
@@ -37,8 +38,8 @@ class HashDB(object):
             return
 
         self.db.put(md5_value.decode('hex'), original)
-        print 'md5: %s type: %s, original: %s' % \
-            (md5_value, msg['action'], original)
+        print 'md5: %s type: %s, original: %s, time: %s' % \
+            (md5_value, msg['action'], original, time.time())
 
     def sub(self):
         context = zmq.Context()
