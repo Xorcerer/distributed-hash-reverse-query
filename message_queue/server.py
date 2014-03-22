@@ -73,7 +73,7 @@ def main():
             pub.send(message)
             # FIXME: Use gevent instead.
             try:
-                pusher.send(message.split(' ', 1)[-1], zmq.NOBLOCK)
+                pusher.send(message, zmq.NOBLOCK)
             except:
                 pass
             log(message)

@@ -24,7 +24,7 @@ def pub():
         # Sleep before sending, or the first message maybe lost.
         # ref: http://lists.zeromq.org/pipermail/zeromq-dev/2013-July/022246.html
         time.sleep(1)
-        msg = md5('abcd').hexdigest() + '{"type": "query"}'
+        msg = md5('abcd').hexdigest() + ' {"action": "query"}'
         pub.send(msg)
         print 'sending', msg
 
