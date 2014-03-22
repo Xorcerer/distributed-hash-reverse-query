@@ -24,4 +24,4 @@ def pub(originals):
         print 'sending ', msg
 
 if __name__ == '__main__':
-    pub(gen_strings(2))
+    pub(gen_strings(1))
