@@ -11,6 +11,16 @@ if hasattr(zmq, 'SNDHWM'):
 context = zmq.Context()
 
 
+class MessageLogger(object):
+
+    def __init__(self):
+        self.message_count = 0
+
+    def __call__(self, msg):
+        self.message_count += 1
+        print msg, self.message_count
+
+
 def log(msg):
     pass
 
@@ -25,14 +35,8 @@ def create_subscriber(port):
 def create_publisher(port):
     pub = context.socket(zmq.PUB)
     pub.bind('tcp://*:%s' % port)
-    pub.setsockopt(zmq.HWM, 0)
+    # pub.setsockopt(zmq.HWM, 0)
     return pub
-
-
-def create_pusher(port):
-    pusher = context.socket(zmq.PUSH)
-    pusher.bind('tcp://*:%s' % port)
-    return pusher
 
 
 def get_args():
@@ -42,8 +46,6 @@ def get_args():
                         help='Port for subscriber to listen.')
     parser.add_argument('--pub-port', action='store', type=int, default='7701',
                         help='Port for publisher to listen.')
-    parser.add_argument('--push-port', action='store', type=int,
-                        default='7702', help='Port for pusher to listen.')
     parser.add_argument('-v', '--verbose', action='store_const', const=True,
                         help='Verbose output.')
 
@@ -55,13 +57,12 @@ def main():
 
     if args.verbose:
         global log
-
-        def log(msg):
-            print msg
+        log = MessageLogger()
 
     sub = create_subscriber(args.sub_port)
     pub = create_publisher(args.pub_port)
-    pusher = create_pusher(args.push_port)
+
+    log('pub HWM: %d' % pub.getsockopt(zmq.HWM))
 
     poller = zmq.Poller()
     poller.register(sub, zmq.POLLIN)
@@ -71,15 +72,7 @@ def main():
         for k, v in socks:
             message = k.recv()
             pub.send(message)
-            # FIXME: Use gevent instead.
-            try:
-                pusher.send(message, zmq.NOBLOCK)
-            except:
-                pass
             log(message)
 
 if __name__ == '__main__':
-    try:
-        main()
-    except KeyboardInterrupt:
-        print 'End.'
+    main()

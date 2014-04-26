@@ -23,7 +23,7 @@
 
     python worker.py ea ea.leveldb localhost 7701
 
-    表示只处理（包括保存和查询）ea开头的md5请求，对应数据库ea.leveldb，任务来源localhost:7701
+表示只处理（包括保存和查询）ea开头的md5请求，对应数据库ea.leveldb，任务来源localhost:7701
 
 测试
 -------

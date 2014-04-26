@@ -3,3 +3,7 @@
 *.pyc
 
 *.leveldb/
+*.kch
+*.kcb
+*.kct
+*.sqlite3
