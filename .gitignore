@@ -1,6 +1,7 @@
 *.txt
 *.index
 *.pyc
+*.log
 
 *.leveldb/
 *.kch

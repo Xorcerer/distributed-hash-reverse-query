@@ -6,13 +6,15 @@
 
 * pyzmq
 * leveldb-py
+* python-daemon
+*
 
 运行
 ----
 
-启动消息队列 （默认任务接收端口 7700，分发端口 7701）：
+启动消息队列 （默认任务接收端口 7700）：
 
-	python message_queue/server.py
+	python hub.py
 
 
 启动工作进程：

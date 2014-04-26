@@ -1,9 +1,16 @@
 import zmq
+import os
 import sys
 import json
+import daemon
 import time
 from hashlib import md5
+
 from dbs import KyotoCabinetDB as BackendDB
+
+import logging
+
+logging.basicConfig(filename='example.log', level=logging.DEBUG)
 
 
 def log(msg):
@@ -53,7 +60,7 @@ class DB(object):
 def serve(db):
     context = zmq.Context()
     sock = context.socket(zmq.REP)
-    sock.bind('tcp://%s:%s' % (mq_host, int(mq_port)))
+    sock.bind('tcp://%s:%s' % (db.mq_host, int(db.mq_port)))
 
     handlers = {
         'query': db.query,
@@ -63,6 +70,10 @@ def serve(db):
     while True:
         msg_buffer = sock.recv()
         md5_hex, msg = extract_json(msg_buffer)
+        if msg['action'] == 'stop':
+            sock.send(json.dumps({'action': msg['action'], 'result': 'ok'}))
+            return
+
         handler = handlers.get(msg['action'], None)
         if handler is None:
             log('Unkown action: %s' % msg['action'])
@@ -72,13 +83,25 @@ def serve(db):
             sock.send(json.dumps(reply))
 
 
-if __name__ == '__main__':
+def main():
+    logging.info('main()')
     prefix, db_name, mq_host, mq_port = sys.argv[1:]
-    print 'prefix, db_name, mq_host, mq_port = ', \
-        prefix, db_name, mq_host, mq_port
+    logging.info('prefix, db_name, mq_host, mq_port = %s %s %s %s',
+                 prefix, db_name, mq_host, mq_port)
 
     db = DB(prefix, db_name, mq_host, mq_port)
     try:
         serve(db)
     finally:
         db.close()
+        logging.info('db %s closed.' % db_name)
+
+
+if __name__ == '__main__':
+    logging.info('Worker starting...')
+    # with daemon.DaemonContext():
+    try:
+        main()
+    except Exception as e:
+        logging.error(e.message)
+    logging.info('Worker exited.')
