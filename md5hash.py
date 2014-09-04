@@ -44,7 +44,7 @@ if __name__ == '__main__':
         print 'Usage: %s <password-file>' % sys.argv[0]
         sys.exit(1)
 
-    db = DB('md5')
+    db = DB('md5.leveldb')
     with open(sys.argv[1]) as f:
         for l in f:
             db.put(l.strip())
