@@ -44,6 +44,7 @@ if __name__ == '__main__':
         print 'Usage: %s <md5-hex>' % sys.argv[0]
         sys.exit(1)
 
-    db = DB('md5')
+    db = DB('md5.leveldb')
+    print sys.argv[1]
     print db.query(sys.argv[1])
     db.close()
